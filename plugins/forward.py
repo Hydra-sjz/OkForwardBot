@@ -2,6 +2,7 @@ import asyncio
 import re
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 lock = asyncio.Lock()
 CURRENT = {}
