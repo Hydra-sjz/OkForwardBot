@@ -73,13 +73,18 @@ async def send_for_forward(bot, message):
     except Exception as e:
         return await message.reply(f'Error - {e}')
 
+    skip = CURRENT.get(query.from_user.id)
+    if skip:
+        skip = skip
+    else:
+        skip = 0
     # last_msg_id is same to total messages
     buttons = [[
         InlineKeyboardButton('YES', callback_data=f'forward#yes#{chat_id}#{last_msg_id}')
     ],[
         InlineKeyboardButton('CLOSE', callback_data=f'forward#close#{chat_id}#{last_msg_id}')
     ]]
-    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{CURRENT.get(message.from_user.id)}</code>\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
+    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{skip}</code>\nTotal Messages: <code>{last_msg_id}</code>\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @Client.on_message(filters.private & filters.command(['set_skip']))
@@ -138,7 +143,7 @@ async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
                     btn = [[
                         InlineKeyboardButton('CANCEL', callback_data=f'forward#cancel#{chat}#{lst_msg_id}')
                     ]]
-                    await msg.edit_text(text=f"Forward Processing...\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nForwarded Files: <code>{forwarded}\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>")
+                    await msg.edit_text(text=f"Forward Processing...\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nForwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>")
                 if message.empty:
                     deleted += 1
                     continue
@@ -155,17 +160,24 @@ async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
                 elif media.mime_type not in ['video/mp4', 'video/x-matroska']:  # Non mp4 and mkv files types skipping
                     unsupported += 1
                     continue
-                await bot.send_cached_media(
-                    chat_id=target_chat_id,
-                    file_id=media.file_id,
-                    caption=f"<code>{media.file_name}</code>"
-                )
-                forwarded += 1
-                await asyncio.sleep(1)
+                try:
+                    await bot.send_cached_media(
+                        chat_id=target_chat_id,
+                        file_id=media.file_id,
+                        caption=f"<code>{media.file_name}</code>"
+                    )
+                    forwarded += 1
+                    await asyncio.sleep(1)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+                    await bot.send_cached_media(
+                        chat_id=target_chat_id,
+                        file_id=media.file_id,
+                        caption=f"<code>{media.file_name}</code>"
+                    )
+                    forwarded += 1
+                    await asyncio.sleep(1)
         except Exception as e:
-            await msg.reply(f"Forward Canceled!\n\nError - {e}")
-        except FloodWait as e:
-            await asyncio.sleep(e.value)
             await msg.reply(f"Forward Canceled!\n\nError - {e}")
         else:
             await msg.edit(f'Forward Completed!\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nFetched Messages: <code>{fetched}</code>\nTotal Forwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>')
