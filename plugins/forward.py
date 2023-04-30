@@ -41,18 +41,18 @@ async def send_for_forward(bot, message):
         match = regex.match(message.text)
         if not match:
             return await message.reply('Invalid link for forward!')
-        source_chat_id = match.group(4)
+        chat_id = match.group(4)
         last_msg_id = int(match.group(5))
-        if source_chat_id.isnumeric():
-            source_chat_id  = int(("-100" + source_chat_id))
+        if chat_id.isnumeric():
+            chat_id  = int(("-100" + chat_id))
     elif message.forward_from_chat.type == enums.ChatType.CHANNEL:
         last_msg_id = message.forward_from_message_id
-        source_chat_id = message.forward_from_chat.username or message.forward_from_chat.id
+        chat_id = message.forward_from_chat.username or message.forward_from_chat.id
     else:
         return
 
     try:
-        source_chat = await bot.get_chat(source_chat_id)
+        source_chat = await bot.get_chat(chat_id)
     except Exception as e:
         return await message.reply(f'Error - {e}')
 
