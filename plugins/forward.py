@@ -21,7 +21,12 @@ async def forward(bot, query):
             chat = int(chat)
         except:
             chat = chat
+
         current = CURRENT.get(query.from_user.id)
+        if current:
+            current = current
+        else:
+            current = 0
         target_chat_id = CHANNEL.get(query.from_user.id)
         await forward_files(int(lst_msg_id), chat, msg, bot, current, target_chat_id)
 
