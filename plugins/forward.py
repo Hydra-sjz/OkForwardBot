@@ -16,7 +16,7 @@ async def forward(bot, query):
             return await query.answer('Wait until previous process complete.', show_alert=True)
 
         msg = query.message
-        await msg.edit('Starting Indexing...')
+        await msg.edit('Starting Forwarding...')
         try:
             chat = int(chat)
         except:
@@ -123,13 +123,14 @@ async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
     deleted = 0
     unsupported = 0
     fetched = 0
+    CANCEL = False
     # lst_msg_id is same to total messages
 
     async with lock:
         try:
             async for message in bot.iter_messages(chat, lst_msg_id, current):
-                if temp.CANCEL:
-                    await msg.edit(f"Successfully Index Canceled!")
+                if CANCEL:
+                    await msg.edit(f"Successfully Forward Canceled!")
                     break
                 current += 1
                 fetched += 1
