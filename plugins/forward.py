@@ -73,7 +73,7 @@ async def send_for_forward(bot, message):
     except Exception as e:
         return await message.reply(f'Error - {e}')
 
-    skip = CURRENT.get(query.from_user.id)
+    skip = CURRENT.get(message.from_user.id)
     if skip:
         skip = skip
     else:
