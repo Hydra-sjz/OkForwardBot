@@ -1,16 +1,16 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from info import PRIVATE_BOT, ADMINS
+from info import PRIVATE_BOT, OWNER
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-async def admins(_, client, message: Message):
+async def owner(_, client, message: Message):
     if PRIVATE_BOT:
-        return message.from_user.id not in ADMINS
+        return message.from_user.id not in OWNER
 
-allowed_users = filters.create(admins)
+allowed_user = filters.create(owner)
 
-@Client.on_message(filters.private & allowed_users & filters.incoming)
+@Client.on_message(filters.private & allowed_user & filters.incoming)
 async def not_admins(bot, message):
     btn = [[
         InlineKeyboardButton('Repo', url='https://github.com/Hansaka-Anuhas/ForwardBot')
