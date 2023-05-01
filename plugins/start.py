@@ -2,7 +2,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-@Client.on_message(filters.command("start") & filters.incoming)
+@Client.on_message(filters.private & filters.command(["start"]) & filters.incoming)
 async def start(client, message):
     btn = [[
         InlineKeyboardButton('Updates Channel', url='https://t.me/SL_Bots_Updates'),
