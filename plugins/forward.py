@@ -84,7 +84,7 @@ async def send_for_forward(bot, message):
     if caption:
         caption = caption
     else:
-        caption = "<code>{file_name}</code>"
+        caption = FILE_CAPTION
     # last_msg_id is same to total messages
     buttons = [[
         InlineKeyboardButton('YES', callback_data=f'forward#yes#{chat_id}#{last_msg_id}')
@@ -182,14 +182,14 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
                 await bot.send_cached_media(
                     chat_id=CHANNEL.get(user_id),
                     file_id=media.file_id,
-                    caption=CAPTION.get(user_id).format(file_name=media.file_name, file_size=media.file_size, caption=message.caption) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
+                    caption=CAPTION.get(user_id).format(file_name=media.file_name, file_size=get_size(media.file_size), caption=message.caption) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.value)  # Wait "value" seconds before continuing
                 await bot.send_cached_media(
                     chat_id=CHANNEL.get(user_id),
                     file_id=media.file_id,
-                    caption=CAPTION.get(user_id).format(file_name=media.file_name, file_size=media.file_size, caption=message.caption) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
+                    caption=CAPTION.get(user_id).format(file_name=media.file_name, file_size=get_size(media.file_size), caption=message.caption) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                 )
             forwarded += 1
             await asyncio.sleep(1)
@@ -199,3 +199,13 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
     else:
         await msg.edit(f'Forward Completed!\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nFetched Messages: <code>{fetched}</code>\nTotal Forwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>')
         FORWARDING[user_id] = False
+
+
+def get_size(size):
+    units = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
+    size = float(size)
+    i = 0
+    while size >= 1024.0 and i < len(units):
+        i += 1
+        size /= 1024.0
+    return "%.2f %s" % (size, units[i])
