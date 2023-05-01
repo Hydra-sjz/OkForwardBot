@@ -11,14 +11,18 @@ async def start(client, message):
         InlineKeyboardButton('Repo', url='https://github.com/Hansaka-Anuhas/ForwardBot'),
         InlineKeyboardButton('Developer', url='https://t.me/Hansaka_Anuhas')
     ]]
-    text = f"""👋 Hello {message.from_user.mention},
+    text = """👋 Hello {},
 
 I can forward document and video (mp4 and mkv) files.
 
 Forward your source channel message to this bot. If source channel is forward restricted last message link send to this bot.
 /set_skip - Set skip message.
-/set_channel - Set target channel."""
-    await message.reply(text, reply_markup=InlineKeyboardMarkup(btn))
+/set_channel - Set target channel.
+/set_caption - Set file caption:
+    {file_name} - File name.
+    {file_size} - File size.
+    {caption} - Default file caption."""
+    await message.reply(text.format(message.from_user.mention), reply_markup=InlineKeyboardMarkup(btn))
 
 
 @Client.on_message(filters.command('id'))
