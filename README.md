@@ -1,1 +1,1 @@
-# ForwardBot
+# Simple telegram forward bot!
