@@ -1,12 +1,14 @@
-# (c) @Hansaka_Anuhas
+"""(c) @Hansaka_Anuhas"""
 
 import asyncio
 import re
+import logging
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 lock = asyncio.Lock()
+# Setup database yourself
 CURRENT = {}
 CHANNEL = {}
 CANCEL = {}
@@ -119,7 +121,7 @@ async def set_target_channel(bot, message):
 
 
 async def forward_files(lst_msg_id, chat, msg, bot, user_id):
-    current = CURRENT.get(user_id)
+    current = CURRENT.get(user_id) if CURRENT.get(user_id) else 0
     forwarded = 0
     deleted = 0
     unsupported = 0
@@ -172,6 +174,7 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
                 forwarded += 1
                 await asyncio.sleep(1)
         except Exception as e:
+            logger.exception(e)
             await msg.reply(f"Forward Canceled!\n\nError - {e}")
         else:
             await msg.edit(f'Forward Completed!\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nFetched Messages: <code>{fetched}</code>\nTotal Forwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>')
