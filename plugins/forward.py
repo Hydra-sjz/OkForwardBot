@@ -19,7 +19,7 @@ FORWARDING = {}
 async def forward(bot, query):
     _, ident, chat, lst_msg_id = query.data.split("#")
     if ident == 'yes':
-        if FORWARDING.get(message.from_user.id):
+        if FORWARDING.get(query.from_user.id):
             return await query.answer('Wait until previous process complete.', show_alert=True)
 
         msg = query.message
