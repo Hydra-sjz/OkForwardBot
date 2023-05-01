@@ -6,7 +6,7 @@ import logging
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from info import CAPTION
+from info import FILE_CAPTION
 logger = logging.getLogger(__name__)
 
 # Setup database yourself. If you need setup database contact @Hansaka_Anuhas for paid edits
@@ -14,6 +14,7 @@ CURRENT = {}
 CHANNEL = {}
 CANCEL = {}
 FORWARDING = {}
+CAPTION = {}
 
 @Client.on_callback_query(filters.regex(r'^forward'))
 async def forward(bot, query):
@@ -78,13 +79,19 @@ async def send_for_forward(bot, message):
         skip = skip
     else:
         skip = 0
+
+    caption = CAPTION.get(message.from_user.id)
+    if caption:
+        caption = caption
+    else:
+        caption = "Default caption - <code>{file_name}</code>"
     # last_msg_id is same to total messages
     buttons = [[
         InlineKeyboardButton('YES', callback_data=f'forward#yes#{chat_id}#{last_msg_id}')
     ],[
         InlineKeyboardButton('CLOSE', callback_data=f'forward#close#{chat_id}#{last_msg_id}')
     ]]
-    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{skip}</code>\nTotal Messages: <code>{last_msg_id}</code>\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
+    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{skip}</code>\nTotal Messages: <code>{last_msg_id}</code>\n\nFile Caption:\n{caption}\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @Client.on_message(filters.private & filters.command(['set_skip']))
@@ -123,13 +130,13 @@ async def set_target_channel(bot, message):
 
 
 @Client.on_message(filters.private & filters.command(['set_caption']))
-def set_caption(bot, message):
+async def set_caption(bot, message):
     try:
         caption = message.text.split(" ", 1)[1]
     except:
-        return message.reply("Give me a caption.")
-
-    
+        return await message.reply("Give me a caption.")
+    CAPTION[message.from_user.id] = caption
+    await message.reply(f"Successfully set file caption.\n\n{caption}")
     
     
     
@@ -175,14 +182,14 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
                 await bot.send_cached_media(
                     chat_id=CHANNEL.get(user_id),
                     file_id=media.file_id,
-                    caption=CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
+                    caption=CAPTION.get(user_id) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                 )
             except FloodWait as e:
                 await asyncio.sleep(e.value)  # Wait "value" seconds before continuing
                 await bot.send_cached_media(
                     chat_id=CHANNEL.get(user_id),
                     file_id=media.file_id,
-                    caption=CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
+                    caption=CAPTION.get(user_id) if CAPTION.get(user_id) else FILE_CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                 )
             forwarded += 1
             await asyncio.sleep(1)
