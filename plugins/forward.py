@@ -122,6 +122,17 @@ async def set_target_channel(bot, message):
     await message.reply(f"Successfully set {chat.title} target channel.")
 
 
+@Client.on_message(filters.private & filters.command(['set_caption']))
+def set_caption(bot, message):
+    try:
+        caption = message.text.split(" ", 1)[1]
+    except:
+        return message.reply("Give me a caption.")
+
+    
+    
+    
+    
 async def forward_files(lst_msg_id, chat, msg, bot, user_id):
     current = CURRENT.get(user_id) if CURRENT.get(user_id) else 0
     forwarded = 0
