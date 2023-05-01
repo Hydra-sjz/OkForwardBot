@@ -25,7 +25,7 @@ Forward your source channel message to this bot. If source channel is forward re
     {caption} - Default file caption.
 
 Note:
-    This bot not have a database, Then your details not saving permanently. If bot restarted your forward is stopping."""
+    This bot not have a database, Then your details not saving permanently. If bot restarted your forward is stopping and your details is deleting."""
     await message.reply(text.format(mention=message.from_user.mention), reply_markup=InlineKeyboardMarkup(btn))
 
 
