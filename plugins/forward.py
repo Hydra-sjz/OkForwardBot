@@ -91,7 +91,7 @@ async def send_for_forward(bot, message):
     ],[
         InlineKeyboardButton('CLOSE', callback_data=f'forward#close#{chat_id}#{last_msg_id}')
     ]]
-    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{skip}</code>\nTotal Messages: <code>{last_msg_id}</code>\n\nFile Caption: {caption}\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
+    await message.reply(f"Source Channel: {source_chat.title}\nTarget Channel: {target_chat.title}\nSkip messages: <code>{skip}</code>\nTotal Messages: <code>{last_msg_id}</code>\nFile Caption: {caption}\n\nDo you want to forward?", reply_markup=InlineKeyboardMarkup(buttons))
 
 
 @Client.on_message(filters.private & filters.command(['set_skip']))
