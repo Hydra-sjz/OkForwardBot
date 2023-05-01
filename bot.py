@@ -29,7 +29,10 @@ class Bot(Client):
         await super().start()
         me = await self.get_me()
         logging.info(f"@{me.username} Is Started!")
-        await self.send_message(OWNER, "Bot Restarted!")
+        try:
+            await self.send_message(OWNER, "Bot Restarted!")
+        except:
+            pass
 
     async def stop(self, *args):
         await super().stop()
