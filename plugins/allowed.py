@@ -1,11 +1,11 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from info import IS_PUBLIC, ADMINS
+from info import IS_PUBLIC_BOT, ADMINS
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 async def admins(_, client, message: Message):
-    if IS_PUBLIC:
+    if IS_PUBLIC_BOT:
         return message.from_user.id not in ADMINS
 
 allowed_users = filters.create(admins)
