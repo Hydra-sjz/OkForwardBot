@@ -6,6 +6,8 @@ import logging
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from info import CAPTION
+logger = logging.getLogger(__name__)
 
 lock = asyncio.Lock()
 # Setup database yourself
@@ -162,7 +164,7 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
                     await bot.send_cached_media(
                         chat_id=CHANNEL.get(user_id),
                         file_id=media.file_id,
-                        caption=f"<code>{media.file_name}</code>"
+                        caption=CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                     )
                 except FloodWait as e:
                     await asyncio.sleep(e.value)
