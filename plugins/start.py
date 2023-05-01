@@ -21,7 +21,10 @@ Forward your source channel message to this bot. If source channel is forward re
 /set_caption - Set file caption:
     {file_name} - File name.
     {file_size} - File size.
-    {caption} - Default file caption."""
+    {caption} - Default file caption.
+
+Note:
+    This bot not have a database, Then your details not saving permanently. If bot restarted your forward is stopping."""
     await message.reply(text.format(message.from_user.mention), reply_markup=InlineKeyboardMarkup(btn))
 
 
