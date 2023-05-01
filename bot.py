@@ -11,6 +11,7 @@ from pyrogram.raw.all import layer
 from info import API_ID, API_HASH, BOT_TOKEN
 from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
+from info import OWNER
 
 class Bot(Client):
     def __init__(self):
@@ -28,6 +29,7 @@ class Bot(Client):
         await super().start()
         me = await self.get_me()
         logging.info(f"@{me.username} Is Started!")
+        await self.send_message(OWNER, "Bot Restarted!")
 
     async def stop(self, *args):
         await super().stop()
