@@ -1,3 +1,5 @@
+# (c) @Hansaka_Anuhas
+
 import asyncio
 import re
 from pyrogram import Client, filters, enums
