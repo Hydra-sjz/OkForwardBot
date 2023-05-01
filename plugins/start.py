@@ -11,9 +11,7 @@ async def start(client, message):
         InlineKeyboardButton('Repo', url='https://github.com/Hansaka-Anuhas/ForwardBot'),
         InlineKeyboardButton('Developer', url='https://t.me/Hansaka_Anuhas')
     ]]
-    text = """👋 Hello {mention},
-
-I can forward document and video (mp4 and mkv) files.
+    text = """I can forward document and video (mp4 and mkv) files.
 
 Forward your source channel message to this bot. If source channel is forward restricted last message link send to this bot.
 /id - Get ID
@@ -26,7 +24,7 @@ Forward your source channel message to this bot. If source channel is forward re
 
 Note:
     This bot not have a database, Then your details not saving permanently. If bot restarted your forward is stopping and your details is deleting."""
-    await message.reply(text.format(mention=message.from_user.mention), reply_markup=InlineKeyboardMarkup(btn))
+    await message.reply(f"👋 Hello {message.from_user.mention},\n\n{text}", reply_markup=InlineKeyboardMarkup(btn))
 
 
 @Client.on_message(filters.command('id'))
