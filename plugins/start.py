@@ -11,7 +11,7 @@ async def start(client, message):
         InlineKeyboardButton('Repo', url='https://github.com/Hansaka-Anuhas/ForwardBot'),
         InlineKeyboardButton('Developer', url='https://t.me/Hansaka_Anuhas')
     ]]
-    text = """👋 Hello {message.from_user.mention},
+    text = f"""👋 Hello {message.from_user.mention},
 
 I can forward document and video (mp4 and mkv) files.
 
