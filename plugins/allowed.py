@@ -1,11 +1,11 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from info import IS_PRIVATE_BOT, ADMINS
+from info import PRIVATE_BOT, ADMINS
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 async def admins(_, client, message: Message):
-    if IS_PRIVATE_BOT:
+    if PRIVATE_BOT:
         return message.from_user.id not in ADMINS
 
 allowed_users = filters.create(admins)
@@ -14,5 +14,7 @@ allowed_users = filters.create(admins)
 async def not_admins(bot, message):
     btn = [[
         InlineKeyboardButton('Repo', url='https://github.com/Hansaka-Anuhas/ForwardBot')
+    ],[
+        InlineKeyboardButton('Developer', url='https://t.me/Hansaka_Anuhas')
     ]]
     await message.reply("You can't access this bot, Create your own bot", reply_markup=InlineKeyboardMarkup(btn))
