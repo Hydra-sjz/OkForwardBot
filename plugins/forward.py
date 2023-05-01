@@ -9,7 +9,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import CAPTION
 logger = logging.getLogger(__name__)
 
-# Setup database yourself
+# Setup database yourself. If you need setup database contact @Hansaka_Anuhas for paid edits
 CURRENT = {}
 CHANNEL = {}
 CANCEL = {}
@@ -167,7 +167,7 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
                     caption=CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                 )
             except FloodWait as e:
-                await asyncio.sleep(e.value)
+                await asyncio.sleep(e.value)  # Wait "value" seconds before continuing
                 await bot.send_cached_media(
                     chat_id=CHANNEL.get(user_id),
                     file_id=media.file_id,
