@@ -9,11 +9,11 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from info import CAPTION
 logger = logging.getLogger(__name__)
 
-lock = asyncio.Lock()
 # Setup database yourself
 CURRENT = {}
 CHANNEL = {}
 CANCEL = {}
+FORWARDING = {}
 
 @Client.on_callback_query(filters.regex(r'^forward'))
 async def forward(bot, query):
@@ -129,10 +129,12 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
     unsupported = 0
     fetched = 0
     CANCEL[user_id] = False
+    FORWARDING[user_id] = False
     # lst_msg_id is same to total messages
 
-    async with lock:
+    if FORWARDING.get(user_id):
         try:
+            FORWARDING[user_id] = True
             async for message in bot.iter_messages(chat, lst_msg_id, CURRENT.get(user_id) if CURRENT.get(user_id) else 0):
                 if CANCEL.get(user_id):
                     await msg.edit(f"Successfully Forward Canceled!")
@@ -180,3 +182,4 @@ async def forward_files(lst_msg_id, chat, msg, bot, user_id):
             await msg.reply(f"Forward Canceled!\n\nError - {e}")
         else:
             await msg.edit(f'Forward Completed!\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nFetched Messages: <code>{fetched}</code>\nTotal Forwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>')
+            FORWARDING[user_id] = False
