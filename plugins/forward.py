@@ -7,6 +7,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 lock = asyncio.Lock()
 CURRENT = {}
 CHANNEL = {}
+CANCEL = {}
 
 @Client.on_callback_query(filters.regex(r'^forward'))
 async def forward(bot, query):
@@ -21,14 +22,7 @@ async def forward(bot, query):
             chat = int(chat)
         except:
             chat = chat
-
-        current = CURRENT.get(query.from_user.id)
-        if current:
-            current = current
-        else:
-            current = 0
-        target_chat_id = CHANNEL.get(query.from_user.id)
-        await forward_files(int(lst_msg_id), chat, msg, bot, current, target_chat_id)
+        await forward_files(int(lst_msg_id), chat, msg, bot, query.from_user.id)
 
     elif ident == 'close':
         await query.answer("Okay!")
@@ -36,7 +30,7 @@ async def forward(bot, query):
 
     elif ident == 'cancel':
         await query.message.edit("Trying to cancel forwarding...")
-        temp.CANCEL = True
+        CANCEL[query.from_user.id] = True
 
 
 @Client.on_message((filters.forwarded | (filters.regex("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")) & filters.text) & filters.private & filters.incoming)
@@ -119,22 +113,22 @@ async def set_target_channel(bot, message):
     if chat.type != enums.ChatType.CHANNEL:
         return await message.reply("I can set channels only.")
     CHANNEL[message.from_user.id] = int(chat.id)
-    await message.reply(f"Successfully set {chat.title} target channel")
+    await message.reply(f"Successfully set {chat.title} target channel.")
 
 
-async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
-    current = current
+async def forward_files(lst_msg_id, chat, msg, bot, user_id):
+    current = CURRENT.get(user_id)
     forwarded = 0
     deleted = 0
     unsupported = 0
     fetched = 0
-    CANCEL = False
+    CANCEL[user_id] = False
     # lst_msg_id is same to total messages
 
     async with lock:
         try:
-            async for message in bot.iter_messages(chat, lst_msg_id, current):
-                if CANCEL:
+            async for message in bot.iter_messages(chat, lst_msg_id, CURRENT.get(user_id)):
+                if CANCEL.get(user_id):
                     await msg.edit(f"Successfully Forward Canceled!")
                     break
                 current += 1
@@ -143,7 +137,7 @@ async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
                     btn = [[
                         InlineKeyboardButton('CANCEL', callback_data=f'forward#cancel#{chat}#{lst_msg_id}')
                     ]]
-                    await msg.edit_text(text=f"Forward Processing...\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nForwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>")
+                    await msg.edit_text(text=f"Forward Processing...\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nForwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>", reply_markup=InlineKeyboardMarkup(btn))
                 if message.empty:
                     deleted += 1
                     continue
@@ -162,25 +156,20 @@ async def forward_files(lst_msg_id, chat, msg, bot, current, target_chat_id):
                     continue
                 try:
                     await bot.send_cached_media(
-                        chat_id=target_chat_id,
+                        chat_id=CHANNEL.get(user_id),
                         file_id=media.file_id,
                         caption=f"<code>{media.file_name}</code>"
                     )
-                    forwarded += 1
-                    await asyncio.sleep(1)
                 except FloodWait as e:
                     await asyncio.sleep(e.value)
                     await bot.send_cached_media(
-                        chat_id=target_chat_id,
+                        chat_id=CHANNEL.get(user_id),
                         file_id=media.file_id,
-                        caption=f"<code>{media.file_name}</code>"
+                        caption=CAPTION.format(file_name=media.file_name, file_size=media.file_size, caption=message.caption)
                     )
-                    forwarded += 1
-                    await asyncio.sleep(1)
+                forwarded += 1
+                await asyncio.sleep(1)
         except Exception as e:
             await msg.reply(f"Forward Canceled!\n\nError - {e}")
         else:
             await msg.edit(f'Forward Completed!\n\nTotal Messages: <code>{lst_msg_id}</code>\nCompleted Messages: <code>{current} / {lst_msg_id}</code>\nFetched Messages: <code>{fetched}</code>\nTotal Forwarded Files: <code>{forwarded}</code>\nDeleted Messages Skipped: <code>{deleted}</code>\nUnsupported Files Skipped: <code>{unsupported}</code>')
-
-    
-    
