@@ -14,6 +14,7 @@ async def start(client, message):
     text = """I can forward document and video (mp4 and mkv) files.
 
 Forward your source channel message to this bot. If source channel is forward restricted last message link send to this bot.
+
 /id - Get ID
 /set_skip - Set skip message.
 /set_channel - Set target channel.
