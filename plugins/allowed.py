@@ -6,7 +6,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 async def owner(_, client, message: Message):
     if PRIVATE_BOT:
-        return message.from_user.id not in OWNER
+        return message.from_user.id != OWNER
 
 allowed_user = filters.create(owner)
 
