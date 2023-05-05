@@ -1,11 +1,14 @@
-FROM python:3.10-slim-buster
-WORKDIR /app
-COPY requirements.txt /app/
-RUN apt update && apt upgrade -y
-RUN apt install git python3-pip ffmpeg -y
-COPY . .
-RUN pip install -r requirements.txt
+# Use the official Python image as the base image
+FROM python:3.10
 
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the application files into the working directory
 COPY . /app
 
-CMD ["python3", "bot.py"]
+# Install the application dependencies
+RUN pip install -r requirements.txt
+
+# Define the entry point for the container
+CMD ["python", "bot.py", "runserver", "0.0.0.0:8000"]
