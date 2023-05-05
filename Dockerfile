@@ -1,14 +1,11 @@
-# Use the official Python image as the base image
-FROM python:3.10
+FROM python:3.10-slim-buster
 
-# Set the working directory in the container
-WORKDIR /app
+RUN apt update && apt upgrade -y
+RUN apt install git -y
+COPY requirements.txt /requirements.txt
 
-# Copy the application files into the working directory
-COPY . /app
-
-# Install the application dependencies
-RUN pip install -r requirements.txt
-
-# Define the entry point for the container
-CMD ["python", "bot.py", "runserver", "0.0.0.0:8000"]
+RUN cd /
+RUN pip3 install -U pip && pip3 install -U -r requirements.txt
+RUN mkdir /OkForwardBot
+WORKDIR /OkForwardBot
+CMD ["python3", "bot.py"]
