@@ -1,23 +1,18 @@
-FROM python:3.10-slim
+# Base Image
+FROM python:3.9-slim
 
-# Install build dependencies and curl
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Working directory
+# Work directory
 WORKDIR /app
 
-# Copy requirements file and install dependencies
+# Copy requirements and install dependencies
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-# Copy the rest of the project files
+# Copy other project files
 COPY . .
 
-# Expose the server port
+# Expose a port to Containers 
 EXPOSE 8080
 
-# Calculate the number of worker processes based on the number of CPU cores
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) app:app"]
+# Command to run on server
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
