@@ -1,5 +1,15 @@
-FROM python:3.8
+FROM python:3.6
+
+# Create app directory
 WORKDIR /app
-COPY . /app
+
+# Install app dependencies
+COPY src/requirements.txt ./
+
 RUN pip install -r requirements.txt
-CMD ["python", "bot.py"]
+
+# Bundle app source
+COPY src /app
+
+EXPOSE 8080
+CMD [ "python3", "bot.py" ]
