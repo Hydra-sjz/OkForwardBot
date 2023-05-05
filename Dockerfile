@@ -1,4 +1,3 @@
-
 FROM python:3.10-slim
 
 # Install build dependencies and curl
