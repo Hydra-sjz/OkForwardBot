@@ -1,16 +1,23 @@
-FROM archlinux/archlinux:latest
+FROM python:3.10-slim
 
-# Install the base packages and any dependencies
-RUN pacman -Syu --noconfirm && pacman -S --noconfirm python-pip git
+# Install build dependencies and curl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Changing the working directory
+# Working directory
 WORKDIR /app
 
-# Copy the requirements.txt file into working directory and install the packages
-COPY requirements.txt .
-RUN pip3 install -U -r requirements.txt
+# Copy requirements file and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all the files into working directory
+# Copy the rest of the project files
 COPY . .
 
-CMD ["python3", "bot.py"]
+# Expose the server port
+EXPOSE 8080
+
+# Calculate the number of worker processes based on the number of CPU cores
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) app:app"]
