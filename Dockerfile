@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 8080
 
 # Calculate the number of worker processes based on the number of CPU cores
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) bot.py:app"]
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) bot.py"]
