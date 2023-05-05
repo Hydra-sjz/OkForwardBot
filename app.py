@@ -13,6 +13,18 @@ from typing import Union, Optional, AsyncGenerator
 from pyrogram import types
 from info import OWNER
 
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "Hello Back4apper!"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
+
+
 class Bot(Client):
     def __init__(self):
         super().__init__(
@@ -24,6 +36,7 @@ class Bot(Client):
             plugins={"root": "plugins"},
             sleep_threshold=5
         )
+    
 
     async def start(self):
         await super().start()
@@ -71,6 +84,7 @@ class Bot(Client):
             for message in messages:
                 yield message
                 current += 1
+
 
 
 app = Bot()
