@@ -1,11 +1,18 @@
-FROM python:3.10-slim-buster
+# Base Image
+FROM python:3.10-slim
 
-RUN apt update && apt upgrade -y
-RUN apt install git -y
-COPY requirements.txt /requirements.txt
+# Work directory
+WORKDIR /app
 
-RUN cd /
-RUN pip3 install -U pip && pip3 install -U -r requirements.txt
-RUN mkdir /OkForwardBot
-WORKDIR /OkForwardBot
-CMD ["python3", "bot.py"]
+# Copy requirements and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+# Copy other project files
+COPY . .
+
+# Expose a port to Containers 
+EXPOSE 8080
+
+# Command to run on server
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
