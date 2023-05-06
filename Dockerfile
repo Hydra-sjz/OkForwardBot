@@ -1,14 +1,18 @@
-# Use the official Python image as the base image
-FROM python:3.10
+DockerfileCopy code# Base image
+FROM python:3.10-slim
 
-# Set the working directory in the container
+# Working directory
 WORKDIR /app
 
-# Copy the application files into the working directory
-COPY . /app
+# Copy requirements file and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the application dependencies
-RUN pip install -r requirements.txt
+# Copy the rest of the project files
+COPY . .
 
-# Define the entry point for the container
-CMD ["python", "bot.py", "runserver", "0.0.0.0:8000"]
+# Expose the server port
+EXPOSE 8080
+
+# Command to start the server
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
