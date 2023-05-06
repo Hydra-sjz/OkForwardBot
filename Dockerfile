@@ -1,15 +1,14 @@
+# Use the official Python image as the base image
 FROM python:3.8
 
-# Create app directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Install app dependencies
-COPY src/requirements.txt ./
+# Copy the application files into the working directory
+COPY . /app
 
+# Install the application dependencies
 RUN pip install -r requirements.txt
 
-# Bundle app source
-COPY src /app
-
-EXPOSE 8080
-CMD [ "python3", "bot.py" ]
+# Define the entry point for the container
+CMD ["python", "bot.py", "runserver", "0.0.0.0:8000"]
