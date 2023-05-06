@@ -1,18 +1,12 @@
-FROM python:3.9-slim
-
-# Working directory
-WORKDIR /app
-
-# Copy requirements file and install dependencies
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the project files
+# Choosing an image for you container.
+FROM python:3.9.7
+# Setting your working directory
+WORKDIR /EXAMPLE
+# This command would copy EVERY FILE from your project folder into your container, so be careful.
 COPY . .
-
-# Expose the server port
-EXPOSE 8080
-
-# Command to start the server
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
-CMD ["python3", "bot.py"]
+# Installing needed packages and dependencies.**
+RUN pip install -r requirements.txt
+# This command basically executes your main file with Python.
+CMD ["python", "bot.py"]
+# Setting a port for your app communications with Telegram servers.
+EXPOSE 80/tcp
