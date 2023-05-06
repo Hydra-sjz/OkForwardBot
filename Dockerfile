@@ -1,5 +1,10 @@
-#DockerfileCopy code# Base image
-FROM python:3.8-slim
+FROM python:3.9-slim
+
+# Install build dependencies and curl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Working directory
 WORKDIR /app
@@ -14,5 +19,5 @@ COPY . .
 # Expose the server port
 EXPOSE 8080
 
-# Command to start the server
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+# Calculate the number of worker processes based on the number of CPU cores
+CMD ["sh", "-c", "gunicorn -b 0.0.0.0:8080 --workers $(($(nproc --all) * 2 + 1)) app:app"]
