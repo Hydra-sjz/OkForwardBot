@@ -6,3 +6,4 @@ BOT_TOKEN = environ.get('BOT_TOKEN', '')
 FILE_CAPTION = environ.get('FILE_CAPTION', '<code>{file_name}</code>')
 OWNER = int(environ.get('OWNER', '5493832202'))
 PRIVATE_BOT = bool(environ.get('PRIVATE_BOT', False))
+#==
